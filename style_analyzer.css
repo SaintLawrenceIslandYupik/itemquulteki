@@ -4,6 +4,7 @@
 	margin: 0px;
 	padding: 0px;
 	font-family: 'muli', sans-serif;
+	/* outline: 1px solid #EF9D87; */
 }
 
 *:focus{
@@ -12,6 +13,7 @@
 .main{
 	display: grid;
 	min-height: 100%;
+	max-width: 100%;
 	grid-template-columns: 1fr 3fr 3fr 1fr;
 	grid-template-rows: 170px 145px minmax(100px, auto) 60px minmax(200px, auto) 70px;
 	grid-template-areas: 
@@ -85,16 +87,50 @@
 
 .search{
 	grid-area: search;
+	max-width: 100%;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	flex-wrap: wrap;
+}
+
+.search_section{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	margin-bottom: 1rem;
+	align-content: flex-start;
+}
+
+.cont{
+	display: flex;
+	flex-direction: row;
+	margin-right: 5px;
+}
+
+.closeButton{
+	display: grid;
+	font-weight: bold;
+	width: 1.1rem;
+	height: 1.1rem;
+	justify-content: center;
+	line-height: 1rem;
+	background-color: #999999;
+	color:#4c4f53;
+	border-radius: 35%;
+}
+
+.closeButton:hover{
+	background-color: #666666;
+	color: #FFF;
+	cursor: pointer;
 }
 
 input[type=text]{
 	flex: 1;
     height: 38px; 
-	max-width: 700px;
-	min-width: 125px;
+	max-width: 18rem;
+	min-width: 18rem;
     font-size: 18px;
     font-weight: lighter;
 	color: #4c4f53;
@@ -107,11 +143,6 @@ input[type=text]{
 	color: #A9A9A9;
 }
 
-#select_cont{
-	display: flex;
-	flex-flow: row;
-}
-
 select{
 	height: 38px;
     font-size: 18px;
@@ -121,7 +152,11 @@ select{
 	border: none;
     border-bottom: 2px solid #666666;
 	background-color: #FFF;
-	margin: 4.5px 5px 0px 5px;
+	margin-top: 4.5px;
+}
+
+#noun_verb, #casemood, #pernum{
+	margin-right: 5px;
 }
 
 input[type=button]{
@@ -133,7 +168,6 @@ input[type=button]{
     font-weight: lighter;
     color: #FFF;
 	transition: all 0.2s ease;
-	margin-left: 10px;
 	cursor: pointer;
 }
 
@@ -169,7 +203,7 @@ input[type=button]:hover{
 	background: #4c4f53;
 }
 
-.minus_cont {
+/* .minus_cont {
 	height: 40px;
 	width: 40px;
 	cursor: pointer;
@@ -195,7 +229,7 @@ input[type=button]:hover{
 	height: 20px;
 	width: 20px;
 	background: #4c4f53;
-}
+} */
 
 .parse{
 	grid-area: parse;
