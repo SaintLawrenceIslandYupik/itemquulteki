@@ -9,6 +9,9 @@
 		<script type="text/javascript" src = "analyzer_js/transducer_inverted.js"></script>
 		<script type="text/javascript" src = "analyzer_js/cyrillic_convert.js"></script>
 		<script type="text/javascript" src = "analyzer_js/postbases_infl.js"></script>
+		<script type="text/javascript" src = "analyzer_js/postbaseUtil.js"></script>
+		<script type="text/javascript" src = "analyzer_js/populate.js"></script>
+
 
 		<!--Icon set created by Lane Schwartz (lanes@illinois.edu)-->
 		<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
@@ -48,32 +51,34 @@
 			</div>
 			<div class="nav" id="nav"></div>
 			<div class="search">
-				<input class="input2" type="text" name="field2" id="field2" placeholder="enter base..." autocomplete="off"></input>
-				<div id="select_cont" style="margin-bottom: 10px;">
-					<div class="plus_cont" id="plus_cont" onclick="addPostbase();">
+				<div class="search_section" id="search_section">
+					<input class="input2" type="text" name="field2" id="field2" placeholder="enter base..." autocomplete="off"></input>
+					<div class="plus_cont" id="plus_cont" title="Add Postbase" onclick="addPostbase();">
 						<div>
 							<div class="plus"></div>
 						</div>
 					</div>
-					<div class="minus_cont" id="minus_cont" onclick="deletePostbase();">
+					<!-- <div class="minus_cont" id="minus_cont" title="Remove Postbase" onclick="deletePostbase();">
 						<div>
 							<div class="minus"></div>
 						</div>
-					</div>
-					<select class="input2" id="noun_verb" onchange="populate(this.id, 'caseMood'); populate(this.id, 'perNum');" autocomplete="off" >
-						<option value="default" selected disabled hidden>Part of Speech</option>
-						<option value="[N]">Noun</option>
-						<option value="[V][Trns]">Verb (Trns)</option>
-						<option value="[V][Intr]">Verb (Intr)</option>
-					</select>
-					<select class="input2" id="caseMood" autocomplete="off">
-						<option value="default" selected>Case/Mood</option>
-					</select>
-					<select class="input2" id="perNum" autocomplete="off">
-						<option value="default" selected>Person/Number</option>
-					</select>
+					</div> -->
+						<select class="input2" id="noun_verb" onchange="populate(this.id, 'caseMood'); populate(this.id, 'perNum');" autocomplete="off" >
+							<option value="default" selected disabled hidden>Part of Speech</option>
+							<option value="[N]">Noun</option>
+							<option value="[V][Trns]">Verb (Trns)</option>
+							<option value="[V][Intr]">Verb (Intr)</option>
+						</select>
+						<select class="input2" id="caseMood" autocomplete="off">
+							<option value="default" selected>Case/Mood</option>
+						</select>
+						<select class="input2" id="perNum" autocomplete="off">
+							<option value="default" selected>Person/Number</option>
+						</select>
 				</div>
-				<input id="searchButton" type="button" value="Generate" onclick="buttonSearch(event)">
+				<div class="search_section">
+					<input id="searchButton" type="button" value="Generate" onclick="buttonSearch(event)">
+				</div>
 			</div>
 			<div class="parse" id="parse">
 				<div class="parseTag">Surface form</div>
@@ -131,8 +136,6 @@
 				//select.dispatchEvent(new Event('change'));
 			});
 			
-
-
 			const searchInput = document.getElementsByClassName("input2");
 
 			for(let i=0; i<searchInput.length; i++){
@@ -143,73 +146,7 @@
 					}
 				});
 			}
-
-		function addPostbase() {
-			const select = document.createElement("select");
-			select.className = "input2";
-			select.name = "postbase";
-
-			//populate the list's options from postbase array
-			var optionArray = postBasesAll;
-			for (var option in optionArray) {
-				var newOption = document.createElement("option");
-				newOption.value = optionArray[option];
-				newOption.innerHTML = optionArray[option];
-				select.options.add(newOption);
-			}
-
-			let select_cont = document.getElementById("select_cont");
-			select_cont.insertBefore(select, select_cont.firstChild);
-			resize_Selects();
-			select.dispatchEvent(new Event('change'));
-		}
-
-		function deletePostbase(){
-			const select_cont = document.getElementById("select_cont")
-			if(select_cont.firstElementChild.name == "postbase") {
-				select_cont.firstElementChild.remove();
-			}
-		}
-
-		//populate caseMood and perNum lists based on user input in noun_verb
-		function populate(s1, s2) {
-				var slct1 = document.getElementById(s1);
-				var slct2 = document.getElementById(s2);
-				var optionArray;
-				slct2.innerHTML = "";
-
-				//handle caseMood list
-				if(s2 == "caseMood"){
-					if(slct1.value =="[N]"){
-						optionArray = nounCase;
-					}
-					else if (slct1.value == "[V][Trns]" || slct1.value =="[V][Intr]"){
-						optionArray = verbMood;
-					}
-				}
-				//handle perNum list
-				else if (s2 == "perNum") {
-					if(slct1.value =="[N]"){
-						optionArray = nounInfl;
-					}
-					else if(slct1.value =="[V][Trns]"){
-						optionArray = verbInflTrns;
-					}
-					else if (slct1.value == "[V][Intr]"){
-						optionArray = verbInflIntr;
-					}
-				}
-				//populate list
-				for(let option in optionArray){
- 					let newOption = document.createElement("option");
-					newOption.value = optionArray[option];
-					newOption.innerHTML = optionArray[option];
-					slct2.options.add(newOption);
-				}
-				
-				slct2.dispatchEvent(new Event('change'));
-		}
-
+		
 		const buttonSearch = (e) => {
 			//run Apply Down
 
