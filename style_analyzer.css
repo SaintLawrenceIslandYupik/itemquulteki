@@ -126,10 +126,23 @@
 	cursor: pointer;
 }
 
-input[type=text]{
+#field2 {
 	flex: 1;
     height: 38px; 
 	max-width: 18rem;
+	min-width: 18rem;
+    font-size: 18px;
+    font-weight: lighter;
+	color: #4c4f53;
+    padding-top: 3px;
+	border: none;
+    border-bottom: 2px solid #666666;
+}
+
+#field1 {
+	flex: 1;
+    height: 38px; 
+	max-width: 80%;
 	min-width: 18rem;
     font-size: 18px;
     font-weight: lighter;
@@ -155,7 +168,7 @@ select{
 	margin-top: 4.5px;
 }
 
-#noun_verb, #casemood, #pernum{
+#noun_verb, #caseMood, #perNum{
 	margin-right: 5px;
 }
 
