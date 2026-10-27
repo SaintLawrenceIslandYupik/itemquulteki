@@ -20,7 +20,7 @@
 		"title title title title"
 		". switch nav ."
 		". search search ."
-		". parse parse ."
+		". parse-container parse-container ."
 		". results results ."
 		"footer footer footer footer";
 }
@@ -244,8 +244,8 @@ input[type=button]:hover{
 	background: #4c4f53;
 } */
 
-.parse{
-	grid-area: parse;
+.parse-container{
+	grid-area: parse-container;
 	display: none;
 	justify-content: left;
 	flex-wrap: wrap;
@@ -271,6 +271,10 @@ input[type=button]:hover{
 	justify-content: start;
 }
 
+.results details:first-child{
+	open: true;
+}
+
 .result{
 	height: auto;
 	width: auto;
@@ -285,6 +289,48 @@ input[type=button]:hover{
 	padding-right: 20px;
 	padding-top: 10px;
 	overflow: hidden;
+}
+
+details {
+  border: 1px solid #aaaaaa;
+  border-radius: 4px;
+  padding: 0.5em 0.5em 0 0.5em;
+  margin-bottom: 0.5em;
+}
+
+details[open] {
+	padding-bottom: 0.5em;
+}
+
+.dropdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.parse{
+	display: flex;
+	flex-direction: row;
+	justify-content: start;
+	gap: 12px;
+	background-color: #efefef;
+  	border-radius: 4px;
+	padding: 0.5em;
+	flex-wrap: wrap;
+}
+
+.parse a:not(:last-child)::after, p:not(:last-child)::after {
+  content: "+"; /* Your symbol here */
+  margin-left: 12px; /* Space after the symbol */
+  pointer-events: none;
+  color: initial;
+  text-decoration: none;
+}
+
+summary {
+  font-weight: bold;
+  margin: -0.5em -0.5em 0;
+  padding: 0.5em;
 }
 
 .entryHead{
