@@ -9,6 +9,10 @@
 		<script type="text/javascript" src = "analyzer_js/transducer.js"></script>
 		<script type="text/javascript" src = "analyzer_js/cyrillic_convert.js"></script>
 		<script type="text/javascript" src = "analyzer_js/postbases_infl.js"></script>
+        <script type="text/javascript" src = "analyzer_js/spellcheck.js"></script>
+        <script type="text/javascript" src = "analyzer_js/class_parseObject.js"></script>
+        <script type="text/javascript" src = "analyzer_js/class_resultList.js"></script>
+
 
 		<!--Icon set created by Lane Schwartz (lanes@illinois.edu)-->
 		<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
@@ -55,7 +59,7 @@
                     <input id="searchButton" type="button" value="Parse" onclick="buttonSearch(event)">
                 </div>
             </div>
-            <div class="parse" id="parse">
+            <div class="parse-container" id="parse-container">
                 <div class="parseTag">Possible analyses</div>
             </div>
             <div class="results" id="results"></div>
@@ -63,9 +67,9 @@
         </div>
         <script type="text/javascript">
             
-            const searchInput = document.getElementById("field1");
-
-            searchInput.addEventListener("keyup", (e) => {
+            const userInput = document.getElementById("field1");
+            const transducer = myNet;
+            userInput.addEventListener("keyup", (e) => {
                 if (e.keyCode == 13) {
                     e.preventDefault();
                     document.getElementById("searchButton").click();
@@ -73,48 +77,55 @@
             });
 
             const buttonSearch = (e) => {
-                const searchString = searchInput.value.toLowerCase().trim();
-                let transducer = myNet
-                var userInput = cyrillic_to_latin(searchString);
-
-                var result = foma_apply_down(transducer, userInput);
-
-                //print error message
-                if (result === undefined || result.length == 0) {
-                    fomaPrint("dummy", 0);
-                }
-                else {
-                    var token = new Array;
-                    for (var i = 0; i < result.length; i++) {
-                      
-                        var morphemes = new Array;
-                     
-                        var inflNotSplit = result[i].split("-");
-                       
-                        var inflSplit = new Array;
-
-                        for (var m = 0; m < inflNotSplit.length; m++) {
-                            if (inflNotSplit[m].includes("[N]")) {
-                                inflSplit = inflNotSplit[m].split("[N]");
-                                tmp = morphemes.concat(inflSplit);
-                                morphemes = tmp;
-                            }
-                            else if (inflNotSplit[m].includes("[V]")) {
-                                inflSplit = inflNotSplit[m].split("[V]");
-                                tmp = morphemes.concat(inflSplit);
-                                morphemes = tmp;
-                            }
-                            else {
-                                morphemes.push(inflNotSplit[m]);
-                            }
-                        }
-
-                        token.push(morphemes)
-                    }
-
-                    fomaPrint(token, 1);
-                }
+                const prs = new parseHandler(userInput.value, transducer)
+                const res = new resultList(prs.parseResult, prs.errors, 50)
+                console.log("parseResult", prs.parseResult)
+                res.print()
             }
+
+            // const buttonSearch = (e) => {
+            //     const searchString = searchInput.value.toLowerCase().trim();
+            //     let transducer = myNet
+            //     var userInput = cyrillic_to_latin(searchString);
+
+            //     var result = foma_apply_down(transducer, userInput);
+
+            //     //print error message
+            //     if (result === undefined || result.length == 0) {
+            //         fomaPrint("dummy", 0);
+            //     }
+            //     else {
+            //         var token = new Array;
+            //         for (var i = 0; i < result.length; i++) {
+                      
+            //             var morphemes = new Array;
+                     
+            //             var inflNotSplit = result[i].split("-");
+                       
+            //             var inflSplit = new Array;
+
+            //             for (var m = 0; m < inflNotSplit.length; m++) {
+            //                 if (inflNotSplit[m].includes("[N]")) {
+            //                     inflSplit = inflNotSplit[m].split("[N]");
+            //                     tmp = morphemes.concat(inflSplit);
+            //                     morphemes = tmp;
+            //                 }
+            //                 else if (inflNotSplit[m].includes("[V]")) {
+            //                     inflSplit = inflNotSplit[m].split("[V]");
+            //                     tmp = morphemes.concat(inflSplit);
+            //                     morphemes = tmp;
+            //                 }
+            //                 else {
+            //                     morphemes.push(inflNotSplit[m]);
+            //                 }
+            //             }
+
+            //             token.push(morphemes)
+            //         }
+
+            //         fomaPrint(token, 1);
+            //     }
+            // }
         </script>
     </body>    
 </html>
