@@ -99,7 +99,8 @@ class resultList {
             dropDown.appendChild(summary);
 
             let message = document.createElement("p");
-            message.textContent = this.errors[inputWord]["error0"]["message"];
+            message.textContent = this.errors[inputWord]["error0"]["message"]
+            message.innerHTML += ` <span class="param">${this.errors[inputWord]["error0"]["param"]}</span>`;
             dropDown.appendChild(message);
 
             return dropDown;

@@ -2,17 +2,20 @@
 //
 class parseHandler {
     errs = {"parse": {
-                "error": "Unable to parse",
-                "message": "The parser was unable to generate any results for this input. This may be due to a non-standard spelling or an incorrectly formed word."
-                }, 
+                "error": "Unable to parse.",
+                "message": "The parser was unable to generate any results for this input. This may be due to a non-standard spelling or an incorrectly formed word.",
+                "param": ""
+            }, 
             "spelling": {
-                "error": "Possible misspelling",
-                "message": "This may be a misspelling or a non-standard spelling of this word. Check that consonants are undoubled and vowels are properly lengthened where necessary."
-                }, 
+                "error": "Possible misspelling.",
+                "message": "This may be a misspelling or a non-standard spelling of this word. Check that consonants are undoubled and vowels are properly lengthened where necessary.",
+                "param": ""
+            }, 
             "input": {
-                "error": "Invalid input",
-                "message": "Contains non-Yupik characters."
-                }
+                "error": "Invalid input.",
+                "message": "Contains non-Yupik characters.",
+                "param": ""
+            }
             };
     errors = {};
 
@@ -53,9 +56,15 @@ class parseHandler {
     //take in user input and validate with spellchecker
     validate(userInput) {
         for (let i = 0; i < this.parseLength; i++) {
-            if (!spellcheck(tokenize(userInput[i], false), new Set(['i', 'a', 'u', 'e']), userInput[i].toLowerCase())) {
-                this.err(userInput[i], this.errs["spelling"]);
+            let spellcheckResult = spellcheck(tokenize(userInput[i], false), new Set(['i', 'a', 'u', 'e']), userInput[i].toLowerCase());
+            console.log("spellcheck result:", spellcheckResult);
+
+            if (!spellcheckResult.bool) {
+                this.err(userInput[i], this.errs["spelling"], spellcheckResult.illegalChar);
             }
+            else if (tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false))) !== userInput[i].toLowerCase()) {
+                this.err(userInput[i], this.errs["spelling"], `Try undoubling the appropriate consonants like this: ${tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false)))}`);
+            }            
         }
 
         return true;
@@ -92,10 +101,13 @@ class parseHandler {
         return token;
     }
 
-    err(targetWord, error) {
-        //errors = {word1: {error1 : {error : text, message: text},  error2: {error : text, message: text}}, 
-        //          word2: {error1: {error : text, message: text}}}
+    err(targetWord, error, paramValue) {
+        //word: {errors : {error0 : {error : text, message: text, param: paramValue},  error1: {error : text, message: text, param: paramValue}}}
+        let param = paramValue === undefined ? "" : paramValue;
+        error["param"] = `<span class="param">${param}</span>`;
+        console.log(param);
         this.errors[targetWord]["error"+Object.keys(this.errors[targetWord]).length] = error;
+        console.log("errors", this.errors);
     }
 
     //Getters and Setters
