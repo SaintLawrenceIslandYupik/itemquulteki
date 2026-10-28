@@ -21,7 +21,6 @@ class parseHandler {
 
     constructor(userInput, transducer) {
         this.userInput = userInput.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ").toLowerCase().trim();
-        console.log("userInput", this.userInput);
         this.transducer = transducer;  
         //maybe just always treat it as an array even if there is only one element
         this.wordsToParse = Array.isArray(this.userInput.split(" ")) ? this.userInput.split(" ") : [this.userInput];
@@ -57,7 +56,6 @@ class parseHandler {
     validate(userInput) {
         for (let i = 0; i < this.parseLength; i++) {
             let spellcheckResult = spellcheck(tokenize(userInput[i], false), new Set(['i', 'a', 'u', 'e']), userInput[i].toLowerCase());
-            console.log("spellcheck result:", spellcheckResult);
 
             if (!spellcheckResult.bool) {
                 this.err(userInput[i], this.errs["spelling"], spellcheckResult.illegalChar);
@@ -105,9 +103,7 @@ class parseHandler {
         //word: {errors : {error0 : {error : text, message: text, param: paramValue},  error1: {error : text, message: text, param: paramValue}}}
         let param = paramValue === undefined ? "" : paramValue;
         error["param"] = `<span class="param">${param}</span>`;
-        console.log(param);
         this.errors[targetWord]["error"+Object.keys(this.errors[targetWord]).length] = error;
-        console.log("errors", this.errors);
     }
 
     //Getters and Setters

@@ -21,7 +21,6 @@ function spellcheck(graphemes, vowels, entry) {
         if (!alphabet.has(grapheme) && !punctuation.has(grapheme) && isNaN(grapheme)) {
             result.illegalChar = `Illegal character '${grapheme}' found in input.`;
             result.bool = false;
-            console.log("illegal character found:", result.illegalChar);
             return result;
         }
         // Converts legal characters to consonant "c" or vowel "v"
@@ -152,7 +151,6 @@ function tokenize_to_string(word) {
 
 // Applies the Latin orthographic undoubling rules, i.e. undoubles the graphemes that are underlyingly voiceless
 function undouble(graphemes) {
-    console.log("undouble graphemes:", graphemes);
 
     const doubled_fricative = new Set(['ll', 'rr', 'gg', 'ghh', 'ghhw'])
     const doubled_nasal = new Set(['nn', 'mm', 'ngng', 'ngngw'])
@@ -178,7 +176,6 @@ function undouble(graphemes) {
     while (i+1 < result.length) {
         let first = result[i]
         let second = result[i+1]
-        console.log("first:", first, "second:", second);
 
         // Rule 1a
         if (doubled_fricative.has(first) && undoubleable_unvoiced_consonant.has(second)) {
@@ -210,7 +207,6 @@ function undouble(graphemes) {
         }
     } // End 'while' Loop
 
-    console.log("result of undouble:", result);
     return result
 }
 

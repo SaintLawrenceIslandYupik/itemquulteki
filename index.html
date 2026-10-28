@@ -79,7 +79,6 @@
             const buttonSearch = (e) => {
                 const prs = new parseHandler(userInput.value, transducer)
                 const res = new resultList(prs.parseResult, prs.errors, 50)
-                console.log("parseResult", prs.parseResult)
                 res.print()
             }
 
