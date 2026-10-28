@@ -4,17 +4,25 @@
 
 function spellcheck(graphemes, vowels, entry) {
 
-    var alphabet = new Set(['ngngw', 'ghhw', 'ngng', 'ghh', 'ghw', 'ngw', 'gg', 'gh', 'kw', 'll', 'mm', 'ng', 'nn', 'qw', 'rr', 'wh', 'a', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z'])
+    const alphabet = new Set(['ngngw', 'ghhw', 'ngng', 'ghh', 'ghw', 'ngw', 'gg', 'gh', 'kw', 'll', 'mm', 'ng', 'nn', 'qw', 'rr', 'wh', 'a', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z'])
 
-    var punctuation = new Set(["'", '\u2019', '.', ',', '!', '?', ';', ':', '\u2500'])
+    const punctuation = new Set(["'", '\u2019', '.', ',', '!', '?', ';', ':', '\u2500'])
 
-    var c_v = []
+    let c_v = []
 
-    for (var i = 0; i < graphemes.length; i++) {
-        var grapheme = graphemes[i]
+    let illegalChar = "";
+
+    const result = {"bool": Boolean, "illegalChar": ""};
+
+
+    for (let i = 0; i < graphemes.length; i++) {
+        let grapheme = graphemes[i]
         // Check for illegal alphabetic characters
         if (!alphabet.has(grapheme) && !punctuation.has(grapheme) && isNaN(grapheme)) {
-            return false
+            result.illegalChar = `Illegal character '${grapheme}' found in input.`;
+            result.bool = false;
+            console.log("illegal character found:", result.illegalChar);
+            return result;
         }
         // Converts legal characters to consonant "c" or vowel "v"
         if (vowels.has(grapheme) && isNaN(grapheme)) {
@@ -27,33 +35,41 @@ function spellcheck(graphemes, vowels, entry) {
     }
 
     // Checks for illegal apostrophe, consonant, and vowel clusters
-    var str = entry
-    var cv  = c_v.join("")
-    var apostrophe = /'/g
+    let str = entry
+    let cv  = c_v.join("")
+    const apostrophe = /'/g
 
-    var consecutiveApostrophes = /''+/
-    var consonantCluster = /ccc+/
-	var CClusterInOnset = /\bcc+/g
-    var vowelCluster = /iii+|aaa+|uuu+|ee+|ia+|iu+|ie+|ai+|au+|ae+|ui+|ua+|ue+|ei+|ea+|eu+/
+    const consecutiveApostrophes = /''+/
+    const consonantCluster = /ccc+/
+	const CClusterInOnset = /\bcc+/g
+    const vowelCluster = /iii+|aaa+|uuu+|ee+|ia+|iu+|ie+|ai+|au+|ae+|ui+|ua+|ue+|ei+|ea+|eu+/
 
     if (apostrophe.test(str)) {
         if (consecutiveApostrophes.test(str)) {
-            return false
+            result.bool = false;
+            result.illegalChar = `Akuzipik spelling conventions do not allow consecutive apostrophes.`;
+            return result;
         } else {
             substr = str.split("'")
             subcv  = cv.split("'")
 
             if (vowelCluster.test(substr.join("")) || consonantCluster.test(subcv.join(""))) {
-                return false
+                result.bool = false;
+                result.illegalChar = `Illegal cluster found in input.`;
+                return result;
             }
         }
     } else if (vowelCluster.test(str) || consonantCluster.test(cv)) {
-        return false
+        result.bool = false;
+        result.illegalChar = `Illegal cluster found in input.`;
+        return result;
     } else if (CClusterInOnset.test(cv)) {
-		return false
+		result.bool = false;
+		result.illegalChar = `Illegal cluster found in input.`;
+		return result;
 	}
 
-    return true
+    return result;
 }
 
 
@@ -134,6 +150,69 @@ function tokenize_to_string(word) {
     return s
 }
 
+// Applies the Latin orthographic undoubling rules, i.e. undoubles the graphemes that are underlyingly voiceless
+function undouble(graphemes) {
+    console.log("undouble graphemes:", graphemes);
+
+    const doubled_fricative = new Set(['ll', 'rr', 'gg', 'ghh', 'ghhw'])
+    const doubled_nasal = new Set(['nn', 'mm', 'ngng', 'ngngw'])
+
+    const doubleable_fricative = new Set(['l', 'r', 'g', 'gh', 'ghw'])
+
+    const undoubleable_unvoiced_consonant = new Set(['p', 't', 'k', 'kw', 'q', 'qw', 'f', 's', 'wh'])
+
+    const undouble={'ll'  : 'l',
+                  'rr'  : 'r',
+                  'gg'  : 'g',
+                  'ghh' : 'gh',
+                  'ghhw': 'ghw',
+                  'nn'  : 'n',
+                  'mm'  : 'm',
+                  'ngng' : 'ng',
+                  'ngngw': 'ngw'}
+
+    let result = graphemes.slice(0) // Copy the list of graphemes
+    
+    let i = 0
+
+    while (i+1 < result.length) {
+        let first = result[i]
+        let second = result[i+1]
+        console.log("first:", first, "second:", second);
+
+        // Rule 1a
+        if (doubled_fricative.has(first) && undoubleable_unvoiced_consonant.has(second)) {
+            result[i] = undouble[first]
+            i += 2
+        }
+        // Rule 1b
+        else if (undoubleable_unvoiced_consonant.has(first) && doubled_fricative.has(second)) {
+            result[i+1] = undouble[second]
+            i += 2
+        }
+        // Rule 2
+        else if (undoubleable_unvoiced_consonant.has(first) && doubled_nasal.has(second)) {
+            result[i+1] = undouble[second]
+            i += 2
+        }
+        // Rule 3a
+        else if ((doubled_fricative.has(first) || doubled_nasal.has(first)) && second=='ll') {
+            result[i] = undouble[first]
+            i += 2
+        }
+        // Rule 3b
+        else if (doubled_fricative.has(first) && (doubled_fricative.has(second) || doubled_nasal.has(second))) {
+            result[i+1] = undouble[second]
+            i += 2
+        }
+        else {
+            i += 1
+        }
+    } // End 'while' Loop
+
+    console.log("result of undouble:", result);
+    return result
+}
 
 // Undoes the Latin orthographic undoubling rules, i.e. redoubles the graphemes that are underlyingly voiceless
 function redouble(graphemes, color) {
