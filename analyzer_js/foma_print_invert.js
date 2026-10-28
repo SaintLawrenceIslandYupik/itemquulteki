@@ -9,7 +9,7 @@ function fomaPrintInvert(tkn, valid){
 	}
 
 	else {
-		document.getElementById("parse").style.display = "flex";
+		document.getElementById("parse-container").style.display = "flex";
 		for(i=0; i<tkn.length; i++){
 			content.innerHTML = tkn[i];
 			results.appendChild(content);
