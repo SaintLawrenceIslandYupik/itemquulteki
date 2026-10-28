@@ -333,6 +333,11 @@ summary {
   padding: 0.5em;
 }
 
+.param {
+	color: #6F1A07;
+	font-weight: bold;
+}
+
 .entryHead{
 	font-weight: bold;
 	font-size: 24px;
