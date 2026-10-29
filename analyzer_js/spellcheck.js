@@ -10,10 +10,7 @@ function spellcheck(graphemes, vowels, entry) {
 
     let c_v = []
 
-    let illegalChar = "";
-
-    const result = {"bool": Boolean, "illegalChar": ""};
-
+    let result = {"bool": Boolean, "illegalChar": ""};
 
     for (let i = 0; i < graphemes.length; i++) {
         let grapheme = graphemes[i]
