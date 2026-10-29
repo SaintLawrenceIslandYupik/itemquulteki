@@ -151,20 +151,41 @@
 			//run Apply Down
 
 			//get input from input2 elements
-			var userInputElements = document.getElementsByClassName("input2");
-			var userInputRaw = new Array;
-			for(let i=0; i<userInputElements.length; i++) {
+			const userInputElements = document.getElementsByClassName("input2");
+			let userInputRaw = new Array;
+			let userInputStrongGhRaw = new Array;
+			if(userInputElements[0].value.slice(-2) == "gh") {
+				userInputStrongGhRaw[0] = userInputElements[0].value + "*";
+			}
+			
+			userInputRaw[0] = userInputElements[0].value;
+
+			for(let i=1; i<userInputElements.length; i++) {
 				userInputRaw[i] = userInputElements[i].value;
+				userInputStrongGhRaw[i] = userInputElements[i].value;
 			}
 
+			
 			//create string from input2 values
-			var userInput = userInputRaw.join("");
+			let userInput = userInputRaw.join("");
+			let userInputStrongGh = userInputStrongGhRaw.join("");
+
+			console.log("input: ", userInput, userInputRaw)
+			console.log("input GH: ", userInputStrongGh, userInputStrongGhRaw)
+
 			let transducer = myNetInvert
-			var result = foma_apply_down(transducer, userInput);
+			let result = foma_apply_down(transducer, userInput);
 
 			//print error message
 			if (result === undefined || result.length == 0) {
-				fomaPrintInvert("dummy", 0);
+				console.log(userInput, result);
+				let resultGh = foma_apply_down(transducer, userInputStrongGh);
+				if(resultGh === undefined || resultGh.length == 0){
+					fomaPrintInvert("dummy", 0);
+				}
+				else {
+					fomaPrintInvert(resultGh, 1);
+				}
 			}
 			else {
 				fomaPrintInvert(result, 1);
