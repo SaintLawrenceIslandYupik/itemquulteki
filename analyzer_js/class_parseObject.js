@@ -17,7 +17,7 @@ class parseHandler {
                 "param": ""
             }
             };
-    errors = {};
+    //errors = {};
 
     constructor(userInput, transducer) {
         this.userInput = userInput.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ").toLowerCase().trim();
@@ -41,7 +41,7 @@ class parseHandler {
         for (let i = 0; i < this.parseLength; i++) {
             let initialParse = foma_apply_down(transducer, userInput[i]);
             if (initialParse === undefined || initialParse.length == 0){
-                this.err(userInput[i], this.errs["parse"]);
+                this.err(userInput[i], structuredClone(this.errs["parse"]));
                 result[userInput[i]] = [initialParse];
             }
             else {
@@ -56,12 +56,11 @@ class parseHandler {
     validate(userInput) {
         for (let i = 0; i < this.parseLength; i++) {
             let spellcheckResult = spellcheck(tokenize(userInput[i], false), new Set(['i', 'a', 'u', 'e']), userInput[i].toLowerCase());
-
             if (!spellcheckResult.bool) {
-                this.err(userInput[i], this.errs["spelling"], spellcheckResult.illegalChar);
+                this.err(userInput[i], structuredClone(this.errs["spelling"]), spellcheckResult.illegalChar);
             }
             else if (tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false))) !== userInput[i].toLowerCase()) {
-                this.err(userInput[i], this.errs["spelling"], `Try undoubling the appropriate consonants like this: ${tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false)))}`);
+                this.err(userInput[i], structuredClone(this.errs["spelling"]), `Try undoubling the appropriate consonants like this: ${tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false)))}`);
             }            
         }
 
