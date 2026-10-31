@@ -55,16 +55,22 @@ class parseHandler {
     //take in user input and validate with spellchecker
     validate(userInput) {
         for (let i = 0; i < this.parseLength; i++) {
+            //validate spelling conventions
             let spellcheckResult = spellcheck(tokenize(userInput[i], false), new Set(['i', 'a', 'u', 'e']), userInput[i].toLowerCase());
-            if (!spellcheckResult.bool) {
-                this.err(userInput[i], structuredClone(this.errs["spelling"]), spellcheckResult.illegalChar);
+            if (!spellcheckResult.bool && spellcheckResult.spellingError) {
+                this.err(userInput[i], structuredClone(this.errs["spelling"]), spellcheckResult.spellingError);
             }
-            else if (tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false))) !== userInput[i].toLowerCase()) {
+            //Check for illegal characters
+            if (!spellcheckResult.bool && spellcheckResult.illegalChar) {
+                this.err(userInput[i], structuredClone(this.errs["input"]), `Illegal character(s) '${spellcheckResult.illegalChar.split("").join(", ")}' found in input.`);
+            };
+            //check for doubled consonants
+            if (tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false))) !== userInput[i].toLowerCase()) {
                 this.err(userInput[i], structuredClone(this.errs["spelling"]), `Try undoubling the appropriate consonants like this: ${tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false)))}`);
             }            
         }
 
-        return true;
+        return;
     }
 
     //break apart each index in the result array into component morphemes and return array of decomposed parses
@@ -101,7 +107,7 @@ class parseHandler {
     err(targetWord, error, paramValue) {
         //word: {errors : {error0 : {error : text, message: text, param: paramValue},  error1: {error : text, message: text, param: paramValue}}}
         let param = paramValue === undefined ? "" : paramValue;
-        error["param"] = `<span class="param">${param}</span>`;
+        error["param"] = `${param}`;
         this.errors[targetWord]["error"+Object.keys(this.errors[targetWord]).length] = error;
     }
 
