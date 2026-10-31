@@ -10,15 +10,14 @@ function spellcheck(graphemes, vowels, entry) {
 
     let c_v = []
 
-    let result = {"bool": Boolean, "illegalChar": ""};
+    let result = {"bool": Boolean, "illegalChar": "", "spellingError": ""};
 
     for (let i = 0; i < graphemes.length; i++) {
         let grapheme = graphemes[i]
         // Check for illegal alphabetic characters
         if (!alphabet.has(grapheme) && !punctuation.has(grapheme) && isNaN(grapheme)) {
-            result.illegalChar = `Illegal character '${grapheme}' found in input.`;
-            result.bool = false;
-            return result;
+            //result.illegalChar = `Illegal character '${grapheme}' found in input.`;
+            result.illegalChar += grapheme;
         }
         // Converts legal characters to consonant "c" or vowel "v"
         if (vowels.has(grapheme) && isNaN(grapheme)) {
@@ -28,6 +27,12 @@ function spellcheck(graphemes, vowels, entry) {
         } else {
             c_v.push("c")
         }
+    }
+
+    //if illegal characters are found, return early
+    if (result.illegalChar) {
+        result.bool = false;
+        return result;
     }
 
     // Checks for illegal apostrophe, consonant, and vowel clusters
@@ -43,7 +48,7 @@ function spellcheck(graphemes, vowels, entry) {
     if (apostrophe.test(str)) {
         if (consecutiveApostrophes.test(str)) {
             result.bool = false;
-            result.illegalChar = `Akuzipik spelling conventions do not allow consecutive apostrophes.`;
+            result.spellingError = `Akuzipik spelling conventions do not allow consecutive apostrophes.`;
             return result;
         } else {
             substr = str.split("'")
@@ -51,17 +56,17 @@ function spellcheck(graphemes, vowels, entry) {
 
             if (vowelCluster.test(substr.join("")) || consonantCluster.test(subcv.join(""))) {
                 result.bool = false;
-                result.illegalChar = `Illegal cluster found in input.`;
+                result.spellingError = `Illegal cluster found in input.`;
                 return result;
             }
         }
     } else if (vowelCluster.test(str) || consonantCluster.test(cv)) {
         result.bool = false;
-        result.illegalChar = `Illegal cluster found in input.`;
+        result.spellingError = `Illegal cluster found in input.`;
         return result;
     } else if (CClusterInOnset.test(cv)) {
 		result.bool = false;
-		result.illegalChar = `Illegal cluster found in input.`;
+		result.spellingError = `Illegal cluster found in input.`;
 		return result;
 	}
 
