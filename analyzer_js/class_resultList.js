@@ -43,7 +43,7 @@ class resultList {
     //print formatted results dynamically
     print() {
         for (const [key, value] of Object.entries(this.parseList)) {
-            this.result.appendChild(this.dropDown(key, value, Object.keys(this.parseList).indexOf(key), this.parseList[key].length));
+            this.result.appendChild(this.dropDown(key, value, Object.keys(this.parseList).indexOf(key), this.parseList[key][0] == "" ? 0 : this.parseList[key].length));
         }
     }
 
@@ -77,6 +77,7 @@ class resultList {
         //append inflection and enclitics
         for (let k=0; k<final.length; k++) {
             let tempAnchor = document.createElement("p");
+            tempAnchor.classList.add("inflEncl");
             tempAnchor.textContent = final[k];
             p.appendChild(tempAnchor);
         }
@@ -88,22 +89,32 @@ class resultList {
         if (index === 0) {
             dropDown.setAttribute("open", "true");
         }
-        //Label with input word
+        
         let summary = document.createElement("summary");
-        summary.textContent = inputWord + ` (${totalParses})`;
 
         //Interrupt to display errors
         if (this.errors[inputWord]["error0"] !== undefined) {
-            summary.textContent += ` Error: ${this.errors[inputWord]["error0"]["error"]}`;
-            summary.style.color = "#6F1A07";
-            dropDown.appendChild(summary);
+            let summaryError = document.createElement("summary");
+                summaryError.textContent += inputWord + ` (${totalParses}) : Errors (${Object.keys(this.errors[inputWord]).length}) `;
+                summaryError.style.color = "#6F1A07";
+                dropDown.appendChild(summaryError);
 
-            let message = document.createElement("p");
-            message.textContent = this.errors[inputWord]["error0"]["message"]
-            message.innerHTML += ` <span class="param">${this.errors[inputWord]["error0"]["param"]}</span>`;
-            dropDown.appendChild(message);
+            Object.entries(this.errors[inputWord]).forEach(([key, value], index) => {
+                let errorTitle = document.createElement("p");
+                errorTitle.textContent = `(${index+1}) Error: ${value["error"]}`;
+                dropDown.appendChild(errorTitle);
 
-            return dropDown;
+                let message = document.createElement("p");
+                message.classList.add("message");
+                message.textContent = value["message"];
+                message.innerHTML += ` <span class="param">${value["param"]}</span>`
+                dropDown.appendChild(message);
+            });
+            
+                return dropDown;
+        } else {
+            //Label with input word
+            summary.textContent = inputWord + ` (${totalParses})`;
         }
         
         dropDown.appendChild(summary);
@@ -117,6 +128,18 @@ class resultList {
         }
         dropDown.appendChild(container);
         return dropDown;
+    }
+
+    dropDownExpandAll(dropdowns) {
+        Array.from(dropdowns).forEach((e) => {
+            e.open = "true";
+        });
+    }
+
+    dropDownCloseAll(dropdowns) {
+        Array.from(dropdowns).forEach((e) => {
+            e.removeAttribute('open');
+        });
     }
 
     //download results to csv
