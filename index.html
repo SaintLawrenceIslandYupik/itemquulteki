@@ -61,6 +61,8 @@
             </div>
             <div class="parse-container" id="parse-container">
                 <div class="parseTag">Possible analyses</div>
+                <input id="expandAll" class="dropdownButton" type="button" value="Expand All" onclick="dropdowns(event)">
+                <input id="closeAll" class="dropdownButton" type="button" value="Close All" onclick="dropdowns(event)"> 
             </div>
             <div class="results" id="results"></div>
             <div class="footer" id="footer"></div>
@@ -76,12 +78,22 @@
                 }
             });
 
+            var prs, res;
+
             const buttonSearch = (e) => {
-                const prs = new parseHandler(userInput.value, transducer)
-                const res = new resultList(prs.parseResult, prs.errors, 50)
+                prs = new parseHandler(userInput.value, transducer)
+                res = new resultList(prs.parseResult, prs.errors, 50)
                 res.print()
             }
 
+            const dropdowns = (e) => {
+                if (e.target.id == "expandAll") {
+                    res.dropDownExpandAll(document.getElementsByTagName("details"))
+                }
+                else {
+                    res.dropDownCloseAll(document.getElementsByTagName("details"))
+                }
+            }
             // const buttonSearch = (e) => {
             //     const searchString = searchInput.value.toLowerCase().trim();
             //     let transducer = myNet
