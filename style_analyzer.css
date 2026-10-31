@@ -188,6 +188,10 @@ input[type=button]:hover{
 	background: #ef9d87;
 }
 
+.dropdownButton {
+	margin-left: 1em;
+}
+
 .plus_cont {
 	height: 40px;
 	width: 40px;
@@ -319,7 +323,7 @@ details[open] {
 	flex-wrap: wrap;
 }
 
-.parse a:not(:last-child)::after, p:not(:last-child)::after {
+.parse a:not(:last-child)::after, .inflEncl:not(:last-child)::after {
   content: "+"; /* Your symbol here */
   margin-left: 12px; /* Space after the symbol */
   pointer-events: none;
@@ -333,6 +337,15 @@ summary {
   padding: 0.5em;
 }
 
+.message{
+	background-color: #efefef;
+  	border-radius: 4px;
+	padding: 0.5em;
+}
+
+details p:not(:first-child, .inflEncl) {
+	margin-top: 0.5em;
+}
 .param {
 	color: #6F1A07;
 	font-weight: bold;
