@@ -28,6 +28,7 @@ class resultList {
         this.printNResults = numResults;
         //this.tknlen = parseList.length;
         document.getElementById("parse-container").style.display = "flex";
+        document.getElementById("export-container").style.display = "flex";
     }
 
     sortResults(parseList) {
