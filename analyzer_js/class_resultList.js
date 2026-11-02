@@ -31,13 +31,11 @@ class resultList {
     }
 
     sortResults(parseList) {
-
-        for(let i = 0; i < parseList.length; i++) {
-            parseList[i].sort((a, b) => a.length - b.length);
+        for (const [key, value] of Object.entries(parseList)) {
+            console.log(parseList[key]);
+            parseList[key].sort((a, b) => a.length - b.length);
         }
-        
         return parseList;
-        
     }
 
     //print formatted results dynamically
@@ -142,20 +140,11 @@ class resultList {
         });
     }
 
-    //download results to csv
-    csvFormat() {
-
-    }
-
     errDisplay() {
         this.result.innerHTML = this.errors;
     }
 
     prntNRslts(length) {
-        return length<this.printNResults ? length : this.printNResults;
+        return length < this.printNResults ? length : this.printNResults;
     }
-
-
-        
-    //print error if error
 }
