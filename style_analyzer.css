@@ -20,7 +20,7 @@
 		"title title title title"
 		". switch nav ."
 		". search search ."
-		". parse-container parse-container ."
+		". parse-container export-container ."
 		". results results ."
 		"footer footer footer footer";
 }
@@ -189,6 +189,26 @@ input[type=button]:hover{
 }
 
 .dropdownButton {
+	margin-left: 1em;
+}
+
+.export-container {
+	grid-area: export-container;
+	display: none;
+	flex-direction: row;
+	justify-content: right;
+	align-items: center;
+}
+
+#exportDropdown{
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+}
+
+#exportButton {
+	border: none;
+	background: none;
+	cursor: pointer;
 	margin-left: 1em;
 }
 
