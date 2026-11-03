@@ -16,7 +16,8 @@ class resultsExport {
             this.blobHandler(tsvString, 'text/tsv;charset=utf-8,\uFEFF');
         }
         else if (this.type === "json") {
-            this.blobHandler(JSON.stringify(this.results), 'application/json');
+            let jsonString = this.jsonExport();
+            this.blobHandler(jsonString, 'application/json');
         }
         else if (this.type === "xml") {
             let xmlString = this.xmlExport();
@@ -65,5 +66,34 @@ class resultsExport {
             }
         }
         return tsvString;
+    }
+
+    jsonExport() {
+        let jsonString = '{"Results": [';
+        for (const word of this.wordsToParse) {
+            if(this.errors[word]["error0"] !== undefined) {
+                jsonString += JSON.stringify({word: word, output: this.errors[word], total: Object.keys(this.errors[word]).length}) + ',';
+            }
+            else {
+                jsonString += JSON.stringify({word: word, output: this.results[word], total: this.results[word].length}) + ',';
+            }
+        }
+        jsonString = jsonString.slice(0, -1) + ']}';
+
+        return jsonString;
+    }
+
+    xmlExport() {
+        //set TEI encoding, maybe something like
+        //<TEI>
+        //  <entry>
+        //      <w lemma="word">
+        //          <m type="stem" msd="stem">qavagh</m>
+        //          <m type="morph1" msd="[Intr][Ind][3Sg]">tuq</m>
+        //      </w>
+        //      <W>
+
+        //  </entry>
+        //</TEI>
     }
 }
