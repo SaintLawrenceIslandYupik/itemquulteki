@@ -33,7 +33,6 @@ class resultList {
 
     sortResults(parseList) {
         for (const [key, value] of Object.entries(parseList)) {
-            console.log(parseList[key]);
             parseList[key].sort((a, b) => a.length - b.length);
         }
         return parseList;
@@ -120,10 +119,25 @@ class resultList {
         let container = document.createElement("div");
         container.classList.add("dropdown-content");
         for (let i = 0; i < parseList.length; i++) {
+            //create line for each parse
+            let line = document.createElement("div");
+            line.classList.add("line");
+            //create parse div and radio button for each parse
             let parse = document.createElement("div");
             parse.classList.add("parse");
             parse = this.formatLinks(parseList[i], parse);
-            container.appendChild(parse);
+            line.appendChild(parse);
+
+            let radio = document.createElement("input");
+            radio.setAttribute("type", "radio");
+            radio.setAttribute("name", inputWord);
+            radio.setAttribute("value", parseList[i].join("+"));
+            radio.classList.add("radios");
+            if (i === 0) {
+                radio.setAttribute("checked", "true");
+            }
+            line.appendChild(radio);
+            container.appendChild(line);
         }
         dropDown.appendChild(container);
         return dropDown;
