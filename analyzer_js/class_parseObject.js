@@ -20,7 +20,7 @@ class parseHandler {
     //errors = {};
 
     constructor(userInput, transducer) {
-        this.userInput = userInput.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ").toLowerCase().trim();
+        this.userInput = this.cleanInput(userInput);
         this.transducer = transducer;  
         //maybe just always treat it as an array even if there is only one element
         this.wordsToParse = Array.isArray(this.userInput.split(" ")) ? this.userInput.split(" ") : [this.userInput];
@@ -34,18 +34,22 @@ class parseHandler {
         this.resultSortParam = "shortest";
     }
 
+    cleanInput(input) {
+        return input.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ").toLowerCase().trim();
+    }
+
     //controller handles the parsing steps and sets this.parseList
-    controller(userInput, transducer) {
+    controller(words, transducer) {``
         let result = {};
-        this.validate(userInput);
+        this.validate(words);
         for (let i = 0; i < this.parseLength; i++) {
-            let initialParse = foma_apply_down(transducer, userInput[i]);
-            if (initialParse === undefined || initialParse.length == 0){
-                this.err(userInput[i], structuredClone(this.errs["parse"]));
-                result[userInput[i]] = [initialParse];
+            let initialParse = foma_apply_down(transducer, words[i]);
+            if (initialParse === undefined || initialParse.length == 0){``
+                this.err(words[i], structuredClone(this.errs["parse"]));
+                result[words[i]] = [initialParse];
             }
             else {
-                result[userInput[i]] = this.morphemizer(initialParse);
+                result[words[i]] = this.morphemizer(initialParse);
             }
         }
         
@@ -53,20 +57,20 @@ class parseHandler {
     }
 
     //take in user input and validate with spellchecker
-    validate(userInput) {
+    validate(words) {
         for (let i = 0; i < this.parseLength; i++) {
             //validate spelling conventions
-            let spellcheckResult = spellcheck(tokenize(userInput[i], false), new Set(['i', 'a', 'u', 'e']), userInput[i].toLowerCase());
+            let spellcheckResult = spellcheck(tokenize(words[i], false), new Set(['i', 'a', 'u', 'e']), words[i].toLowerCase());
             if (!spellcheckResult.bool && spellcheckResult.spellingError) {
-                this.err(userInput[i], structuredClone(this.errs["spelling"]), spellcheckResult.spellingError);
+                this.err(words[i], structuredClone(this.errs["spelling"]), spellcheckResult.spellingError);
             }
             //Check for illegal characters
             if (!spellcheckResult.bool && spellcheckResult.illegalChar) {
-                this.err(userInput[i], structuredClone(this.errs["input"]), `Illegal character(s) '${spellcheckResult.illegalChar.split("").join(", ")}' found in input.`);
+                this.err(words[i], structuredClone(this.errs["input"]), `Illegal character(s) '${spellcheckResult.illegalChar.split("").join(", ")}' found in input.`);
             };
             //check for doubled consonants
-            if (tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false))) !== userInput[i].toLowerCase()) {
-                this.err(userInput[i], structuredClone(this.errs["spelling"]), `Try undoubling the appropriate consonants like this: ${tokens_to_string(undouble(tokenize(userInput[i].toLowerCase(), false)))}`);
+            if (tokens_to_string(undouble(tokenize(words[i].toLowerCase(), false))) !== words[i].toLowerCase()) {
+                this.err(words[i], structuredClone(this.errs["spelling"]), `Try undoubling the appropriate consonants like this: ${tokens_to_string(undouble(tokenize(words[i].toLowerCase(), false)))}`);
             }            
         }
 
