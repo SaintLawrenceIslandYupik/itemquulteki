@@ -1,13 +1,9 @@
 class resultsExport {
-
     constructor(type, wordsToParse, results, errors) {
-        this.type = type;
-        this.wordsToParse = wordsToParse;
-        console.log("words to parse: ", this.wordsToParse);
-        this.results = results;
-        console.log("results: ", this.results);
-        this.errors = errors;
-        console.log("errors: ", this.errors);
+            this.type = type;
+            this.wordsToParse = wordsToParse;
+            this.results = results;
+            this.errors = errors;
     }
 
     export() {
@@ -39,17 +35,38 @@ class resultsExport {
 
         const link = document.createElement('a');
         link.setAttribute('href', url);
-        link.setAttribute('download', `results_${this.wordsToParse.slice(0,2)}..._${new Date().toISOString().slice(0, 10)}.${this.type}`);
+        link.setAttribute('download', `results_${this.wordsToParse.slice(0,2)}...${new Date().toISOString().slice(0, 10).replace(/[-]/g, '_')}_${this.whichResults}.${this.type}`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+}
+
+class resultsExportParser extends resultsExport {
+
+    constructor(type, wordsToParse, results, errors) {
+        super(type, wordsToParse, results, errors);
+        this.whichResults = document.querySelector('input[name="exportOption"]:checked')?.value;
+        this.results = this.whichResults === "selected" ? this.getSelectedResults() : this.results;
+    }
+
+    getSelectedResults() {
+        let selectedResults = {};
+        // Implementation for getting selected results\
+        for (const word of this.wordsToParse) {
+            let selectedRadio = document.querySelector(`input[name="${word}"]:checked`)?.value;
+            if (selectedRadio) {
+                selectedResults[word] = selectedRadio.split('+');
+            }
+        }
+        return selectedResults;
     }
 
     tsvExport() {
         let tsvString = "";
         for (const word of this.wordsToParse) {
             //check for errors first
-            console.log("errors for ", word, ": ", this.errors[word]);
             if(this.errors[word]["error0"] !== undefined) {
                 tsvString += `${word}\t${Object.keys(this.errors[word]).length}\t`;
                 for (const [key, value] of Object.entries(this.errors[word])) {
@@ -58,9 +75,15 @@ class resultsExport {
                 tsvString = tsvString.slice(0, -1) + '\r\n';
             }
             else {
-                tsvString += `${word}\t${this.results[word].length}\t`;
-                for (const result of this.results[word]) {
-                    tsvString += `${result.join('+')}\t`;
+                if (this.whichResults === "selected") {
+                    tsvString += `${word}\t1\t`;
+                    tsvString += `${this.results[word].join('+')}\t`;
+                }
+                else{
+                    tsvString += `${word}\t${this.results[word].length}\t`;
+                    for (const result of this.results[word]) {
+                        tsvString += `${result.join('+')}\t`;
+                    }
                 }
                 tsvString = tsvString.slice(0, -1) + '\r\n';
             }
@@ -75,7 +98,12 @@ class resultsExport {
                 jsonString += JSON.stringify({word: word, output: this.errors[word], total: Object.keys(this.errors[word]).length}) + ',';
             }
             else {
-                jsonString += JSON.stringify({word: word, output: this.results[word], total: this.results[word].length}) + ',';
+                if (this.whichResults === "selected") {
+                    jsonString += JSON.stringify({word: word, output: this.results[word], total: 1}) + ',';
+                }
+                else {
+                    jsonString += JSON.stringify({word: word, output: this.results[word], total: this.results[word].length}) + ',';
+                }
             }
         }
         jsonString = jsonString.slice(0, -1) + ']}';
@@ -95,5 +123,64 @@ class resultsExport {
 
         //  </entry>
         //</TEI>
+    }
+}
+
+class resultsExportDictionary extends resultsExport {
+
+    constructor(type, wordsToParse, results, errors) {
+        super(type, wordsToParse, results, errors);
+    }
+
+    tsvExport() {
+        let tsvString = "Headword\tGloss\tPart of Speech\tTags\tExamples\tIPA\tCyrillic\r\n";
+        for (const word of Object.entries(this.results)) {
+            tsvString += `${word.UUID}\t${word.gloss}\t${word.partOfSpeech}\t${word.tags.join(';')}\t${word.examples.join(';')}\t${word.ipa}\t${word.cyrillic}\r\n`;
+        }
+        return tsvString;
+    }
+
+    jsonExport() {
+        return JSON.stringify(this.results);
+    }
+
+    xmlExport() {
+        let xmlString = '<?xml version="1.0" encoding="UTF-8"?>\n<results>\n';
+        for (const word of Object.entries(this.results)) {
+            xmlString += `  <result type="${word.UUID}">\n`;
+            xmlString += `    <headword>${word.headword}</headword>\n`;
+            xmlString += `    <gloss>${word.gloss}</gloss>\n`;
+            xmlString += `    <partOfSpeech>${word.partOfSpeech}</partOfSpeech>\n`;
+            xmlString += `    <tags>${word.tags.join(';')}</tags>\n`;
+            xmlString += `    <examples>${word.examples.join(';')}</examples>\n`;
+            xmlString += `    <ipa>${word.ipa}</ipa>\n`;
+            xmlString += `    <cyrillic>${word.cyrillic}</cyrillic>\n`;
+            xmlString += `  </result>\n`;
+        }
+        xmlString += '</results>';
+        return xmlString;
+    }
+
+    pdfExport() {
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            throw new Error('Unable to open print window');
+        }
+
+        printWindow.document.write(`
+            <!doctype html>
+            <html>
+                <head>
+                    <title>Search results</title>
+                </head>
+                <body>
+                    <pre>${JSON.stringify(this.results, null, 2)}</pre>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
     }
 }
