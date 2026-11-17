@@ -1,5 +1,13 @@
 @charset "utf-8";
 
+:root{
+	--accent1: #b0e0e6; /* Parse tag, wordwheel highlight */
+	--accent2: #ef9d87; /* Headwords, header border accent, radio buttons */
+	--lightText: #FFFFFF;
+	--darkText: #333;
+	--buttons: #4c4f53;
+}
+
 * {
 	margin: 0px;
 	padding: 0px;
@@ -195,9 +203,56 @@ input[type=button]:hover{
 .export-container {
 	grid-area: export-container;
 	display: none;
+	flex-direction: column;
+	justify-content: right;
+	align-items: right;
+}
+
+.exportType {
+	display: flex;
 	flex-direction: row;
 	justify-content: right;
 	align-items: center;
+	margin-right: 1em;
+}
+
+.exportOptions {
+	display: flex;
+	flex-direction: row;
+	justify-content: right;
+	align-items: center;
+	margin-right: 1em;
+	padding-top: 0.5em;
+}
+
+.radios{
+	display: flex;
+	flex-direction: row;
+	/* margin-top: 1rem; */
+	margin-left: 0.5rem;
+	justify-content: center;
+}
+
+.radiolabel{
+	cursor: pointer;
+	margin-left: 0.5rem;
+	/* margin: 0 1rem 0 1rem;
+	padding-left: .5rem; */
+}
+
+input[type='radio'] {
+	box-sizing: border-box;
+	appearance: none;
+	background: white;
+	outline: .125em solid #333;
+	border: 3px solid white;
+	width: .75rem;
+	height: .75rem;
+	cursor: pointer;
+}
+  
+input[type='radio']:checked {
+	background: var(--accent2);
 }
 
 #exportDropdown{
@@ -293,6 +348,7 @@ input[type=button]:hover{
 	display: flex;
 	flex-direction: column;
 	justify-content: start;
+	margin-top: 1em;
 }
 
 .results details:first-child{
@@ -341,10 +397,11 @@ details[open] {
   	border-radius: 4px;
 	padding: 0.5em;
 	flex-wrap: wrap;
+	max-width: 95%;
 }
 
 .parse a:not(:last-child)::after, .inflEncl:not(:last-child)::after {
-  content: "+"; /* Your symbol here */
+  content: "+"; 
   margin-left: 12px; /* Space after the symbol */
   pointer-events: none;
   color: initial;
@@ -366,6 +423,19 @@ summary {
 details p:not(:first-child, .inflEncl) {
 	margin-top: 0.5em;
 }
+
+.line {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	background-color: #efefef;
+  	border-radius: 4px;
+	padding-right: 0.5em;
+	flex-wrap: wrap;
+}
+
 .param {
 	color: #6F1A07;
 	font-weight: bold;
