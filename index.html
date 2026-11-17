@@ -66,12 +66,20 @@
                 <input id="closeAll" class="dropdownButton" type="button" value="Close All" onclick="dropdowns(event)">
             </div>
             <div class="export-container" id="export-container">
-                <select name="exportDropdown" id="exportDropdown" title="Select Export Type">
-                    <option value="tsv">.tsv</option>
-                    <option value="json">.json</option>
-                    <!--<option value="xml">.xml</option> -->
-                </select>
-                <button id="exportButton" onclick="exportType(exportDropdown.value)" title="Export Results"><img src="icons/download.png" alt="Export Results" style="max-height: 2.25rem;" /></button>
+                <div class="exportType">
+                    <select name="exportDropdown" id="exportDropdown" title="Select Export Type">
+                        <option value="tsv">.tsv</option>
+                        <option value="json">.json</option>
+                        <!--<option value="xml">.xml</option> -->
+                    </select>
+                    <button id="exportButton" onclick="exportType(exportDropdown.value)" title="Export Results"><img src="icons/download.png" alt="Export Results" style="max-height: 2.25rem;" /></button>
+                </div>
+                <div class="exportOptions">
+                    <input class="radios" id="exportSelected" type="radio" name="exportOption" value="selected" title="Export Selected Parse" checked>
+                    <label class="radiolabel" for="exportSelected" title="Export Selected Parse">Selected</label>
+                    <input class="radios" id="exportAll" type="radio" name="exportOption" value="all" title="Export All Parses">
+                    <label class="radiolabel" for="exportAll" title="Export All Parses">All</label>
+                </div>
             </div>
             <div class="results" id="results"></div>
             <div class="footer" id="footer"></div>
@@ -107,7 +115,7 @@
             }
             
             const exportType = (type) => {
-                exp = new resultsExport(type, prs.wordsToParse, res.parseList, structuredClone(prs.errors));
+                exp = new resultsExportParser(type, prs.wordsToParse, res.parseList, structuredClone(prs.errors));
                 exp.export();
             }
 
