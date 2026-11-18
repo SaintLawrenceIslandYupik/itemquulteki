@@ -53,11 +53,14 @@ class resultsExportParser extends resultsExport {
 
     getSelectedResults() {
         let selectedResults = {};
-        // Implementation for getting selected results\
+        // Implementation for getting selected results
         for (const word of this.wordsToParse) {
-            let selectedRadio = document.querySelector(`input[name="${word}"]:checked`)?.value;
-            if (selectedRadio) {
-                selectedResults[word] = selectedRadio.split('+');
+            let selectedChecks = document.querySelectorAll(`input[name="${word}"]:checked`);
+            if (selectedChecks.length > 0) {
+                selectedResults[word] = Array.from(selectedChecks).map(check => check.value);
+            }
+            else {
+                selectedResults[word] = [];
             }
         }
         return selectedResults;
@@ -76,8 +79,8 @@ class resultsExportParser extends resultsExport {
             }
             else {
                 if (this.whichResults === "selected") {
-                    tsvString += `${word}\t1\t`;
-                    tsvString += `${this.results[word].join('+')}\t`;
+                    tsvString += `${word}\t${this.results[word].length}\t`;
+                    tsvString += `${this.results[word].join('\t')}\t`;
                 }
                 else{
                     tsvString += `${word}\t${this.results[word].length}\t`;
@@ -99,7 +102,7 @@ class resultsExportParser extends resultsExport {
             }
             else {
                 if (this.whichResults === "selected") {
-                    jsonString += JSON.stringify({word: word, output: this.results[word], total: 1}) + ',';
+                    jsonString += JSON.stringify({word: word, output: this.results[word], total: this.results[word].length}) + ',';
                 }
                 else {
                     jsonString += JSON.stringify({word: word, output: this.results[word], total: this.results[word].length}) + ',';
