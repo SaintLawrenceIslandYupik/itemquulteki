@@ -128,15 +128,15 @@ class resultList {
             parse = this.formatLinks(parseList[i], parse);
             line.appendChild(parse);
 
-            let radio = document.createElement("input");
-            radio.setAttribute("type", "radio");
-            radio.setAttribute("name", inputWord);
-            radio.setAttribute("value", parseList[i].join("+"));
-            radio.classList.add("radios");
-            if (i === 0) {
-                radio.setAttribute("checked", "true");
-            }
-            line.appendChild(radio);
+            let checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("name", inputWord);
+            checkbox.setAttribute("value", parseList[i].join("+"));
+            checkbox.classList.add("checkboxes");
+            // if (i === 0) {
+            //     radio.setAttribute("checked", "true");
+            // }
+            line.appendChild(checkbox);
             container.appendChild(line);
         }
         dropDown.appendChild(container);
